@@ -1,0 +1,40 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import pandas as pd
+
+driver = webdriver.Chrome()
+driver.get("http://www.bietjhs.ac.in/result2019/GetResult.aspx")
+driver.title
+
+import re
+dropdown=driver.find_element(By.ID,'ddlSession')
+select = Select(dropdown)
+select.select_by_value('11')
+dropdown=driver.find_element(By.ID,'ddlSemester')
+select = Select(dropdown)
+select.select_by_value('4')
+list=[]
+i=2100430100001
+while(i<=2100430100063):
+    lis=[]
+    z=driver.find_element(By.ID, "txtRollNo")
+    z.send_keys(i)
+    driver.find_element(By.ID, "btnSubmit").click()
+    y=driver.find_element(By.ID, "lbloSGPA").text
+    a=driver.find_element(By.ID, "lbleSGPA").text
+    x=driver.find_element(By.ID, "lblSName").text
+    if (len(x)==0):
+       i=i+1
+       driver.back()
+       z.clear()
+       continue
+    list.append([x,y,a])
+    driver.back()
+    z.clear()
+    i=i+1
+
+l=pd.DataFrame(list,columns=['NAME','oSGPA','eSGPA'])
+l.sort_values(by="CGPA",ascending=False)
+l.to_csv('eethird.csv', index=False)
